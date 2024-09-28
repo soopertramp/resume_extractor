@@ -367,8 +367,95 @@ except ValueError as ve:
     print(f"ValueError: {ve}")
 except Exception as e:
     print(f"An error occurred: {e}")
+```
 In case a duplicate is found or another error occurs, the system returns an appropriate error message and aborts the insertion process.
+
+## How It Works: Overall Process
+### File Upload: Users upload resumes in PDF or DOCX format via a Flask API.
+
+The file is saved temporarily in a designated upload folder.
+
+### Text Extraction: The system extracts the raw text from the uploaded resume using:
+
+- pdfplumber for PDFs.
+- docx for Word documents.
+
+### Information Extraction:
+
+- Names: Extracted using Spacy's Named Entity Recognition (NER).
+- Phone Numbers & Emails: Identified using regex patterns.
+- Skills & Job Roles: Matched from pre-defined CSV files.
+- Experience & Qualifications: Extracted using predefined patterns and keyword matching.
+
+### Data Structuring: 
+
+The extracted information is structured into a JSON format that includes fields like name, phone number, email, qualifications, job role, experience, and skills.
+
+### Duplicate Checking: 
+Before inserting data into the PostgreSQL database, the system checks for duplicate email entries across several tables (candidate, users, company) to avoid redundant records.
+
+### Database Insertion: 
+Once validated, the structured data is inserted into the PostgreSQL database. A unique UUID is generated for each candidate, and fields are mapped to corresponding database columns.
+
+### Response: 
+The Flask API returns a success message along with the candidate_id if the insertion is successful, or an error message if issues such as duplicates are detected.
+
+### Error Handling: 
+The system gracefully handles errors (e.g., unsupported file types, duplicate records) by returning appropriate error responses.
+
+## Technologies Used
+- Python: The core programming language used for text extraction, data processing, and server-side API handling.
+- pdfplumber: Used for extracting text from PDF files.
+- docx: Used for extracting text from DOCX files.
+- Spacy: Utilized for NLP tasks such as extracting names and locations through Named Entity Recognition (NER).
+- Regex: Employed to identify and extract phone numbers and email addresses.
+- Pandas: Used to process structured CSV data for skills and job role matching.
+- Flask: A lightweight web framework used to build the API for uploading resumes and handling requests.
+- PostgreSQL: The relational database used for storing and managing structured resume data. It supports efficient querying, ensures data integrity, and handles large volumes of candidate information.
+- psycopg2: The Python library used to interface with the PostgreSQL database. It manages database connections, queries, and transactions.
+- dotenv: Used to securely manage environment variables like database credentials, ensuring sensitive information is not hardcoded in the application.
+
+## Folder Structure
+
+The project follows a well-organized folder structure to ensure scalability and easy management of components:
+
+```bash
+
+/project_root
+│
+├── /data
+│   ├── skills.csv          # CSV file containing a list of skills for matching.
+│   ├── job_role.csv        # CSV file containing job roles for matching.
+│
+├── /src
+│   ├── info_extractor.py   # Contains functions for extracting names, phone numbers, emails, skills, job roles, and qualifications using Spacy and regex.
+│   ├── text_extractor.py   # Handles the extraction of text from resumes in PDF and DOCX formats using pdfplumber and docx.
+│
+├── /uploads                # Directory for temporarily storing uploaded resumes.
+│
+├── connector.py            # Flask API to handle file uploads and interact with PostgreSQL for data storage.
+├── .env                    # Environment variables (e.g., database credentials).
+├── requirements.txt        # List of dependencies for the project (Flask, Spacy, pdfplumber, etc.).
 ```
 
-### Future Enhancements:
-Relational Mapping: More relational tables can be added (e.g., to track multiple past job roles or experiences).
+## Future Improvements:
+
+- File Format Expansion: Support for more file types like .txt, .rtf, and even image-based resumes (via OCR technology) can be added.
+
+- Advanced NLP Models: Implement more sophisticated or custom-trained models (e.g., BERT or GPT-based) for extracting information more accurately, handling varied resume formats, and better understanding context.
+
+- Enhanced Front-end Interface: A front-end dashboard for users to upload resumes, view extracted data, and interact with the system in real time could improve user experience.
+
+- Matching Algorithms: Implementing resume-to-job matching based on extracted skills and job roles would add significant value to the recruitment process.
+
+- Machine Learning Integration: Integrate machine learning models to rank or recommend candidates based on extracted data and match it with job descriptions.
+
+- Data Validation: Improve validation for extracted fields like experience, qualifications, and skills by cross-referencing with real-world databases or job boards.
+
+- Security Enhancements: Strengthen data security by implementing encryption for sensitive data (e.g., contact information) during both storage and transmission.
+
+- Scalability: Containerization with Docker and Kubernetes can be added for better scalability, allowing the system to handle larger datasets and multiple concurrent uploads seamlessly.
+
+- Analytics & Reporting: Develop advanced reporting and analytics features to provide insights on trends, skills demand, and candidate qualifications, making the system useful for broader workforce analysis.
+
+- Internationalization: Enhance the system to handle resumes in multiple languages using multilingual NLP models, making the platform globally accessible.
