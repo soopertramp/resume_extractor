@@ -84,7 +84,7 @@ def extract_text_from_word(docx_path):
 
 ```extract_text_from_word(docx_path)```: This function uses the python-docx library to open a DOCX file and extract the text from each paragraph in the document, concatenating it into a single string.
 
-Then comes information extraction from the extracted text.
+**Then comes information extraction from the extracted text.**
 
 **Skills and Job Roles Data**:
 
@@ -114,6 +114,11 @@ def extract_skillset(text):
     
     return skillset
 ```
+```extract_skillset(text)```:
+
+- This function extracts skills from the provided text.
+- It loads a list of skills from a CSV file (skills.csv) and compares each skill against the text (case-insensitive).
+- If a skill from the CSV file is found in the text, it is added to the skillset list, which is then returned.
 
 ```python
 def extract_job_role(text):
@@ -134,6 +139,12 @@ def extract_job_role(text):
     
     return job_role[0] if job_role else ''
 ```
+
+```extract_job_role(text)```:
+
+- This function extracts job roles from the provided text.
+- It loads a list of job roles from another CSV file (job_role.csv) and checks if any of the job roles appear in the text (also case-insensitive).
+- If a matching job role is found, it returns the first one; if no match is found, it returns an empty string.
 
 **Qualification and Experience Data**:
 -   The system looks for standard education degrees (e.g., B.Tech, M.Sc) in the resume text by referencing a list of common qualifications embedded in the code.
@@ -182,11 +193,26 @@ def extract_qualification(text):
         else:
             education.append(key)
     return education
+```
+```extract_qualification(text):```
 
+- This function extracts educational qualifications and possible graduation years from the given text.
+- EDUCATION: A predefined list of common educational degrees is checked against the text to identify qualifications.
+- YEAR: A regular expression (\b(19|20)\d{2}\b) is used to match a year pattern (from 1900 to 2099).
+- The text is tokenized using SpaCy's NLP model, and the function looks for matches with qualifications and extracts nearby words or tokens to determine whether a year is mentioned.
+- The result is a list of tuples containing the degree and the year (if available) or just the degree if no year is found.
+
+```python
 def extract_experience(text):
     experience = re.findall(r'\b\d+ years\b', text)
     return experience[0] if experience else ''
 ```
+
+```extract_experience(text):```
+
+- This function extracts the number of years of experience from the text.
+- It uses a regular expression (\b\d+ years\b) to search for patterns like "5 years," indicating years of experience.
+- If a match is found, the first match is returned; otherwise, an empty string is returned.
 
 **Spacy NLP Pipeline**:
 
@@ -231,6 +257,17 @@ def extract_names(text):
     return '', ''
 
 ```
+```NAME_PATTERN```: This pattern defines a sequence of two proper nouns (PROPN), which generally correspond to a first and last name. The pattern helps identify name-like structures in the text.
+
+```extract_names(text):```
+
+- The function processes the input text using SpaCy to tokenize and identify parts of speech.
+- It then initializes a Matcher object, which is used to find patterns (like names) in the text. The Matcher uses SpaCy’s vocabulary (nlp.vocab).
+- The NAME_PATTERN is added to the matcher to search for two consecutive proper nouns, which is a common structure for names.
+- The function searches for matches, and when it finds a match, it checks that the span of text does not include the word "name" (to avoid false positives).
+- If a match is found, it splits the span into individual words, assuming the first and last words are the first and last names, respectively.
+- If no valid name is found, it returns empty strings ('', '').
+
 **Handling Multiple Data Types**:
 
 The system supports both structured (CSV files) and unstructured (text from resumes) data types. CSV files are used for matching skills and job roles, while the unstructured text is processed using regex and NLP.
