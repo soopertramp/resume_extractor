@@ -275,3 +275,100 @@ The system supports both structured (CSV files) and unstructured (text from resu
 **Summary of Data Preparation**:
 
 The project efficiently handles text extraction, qualification matching, skills/job role matching, and ensures data is structured before storage. Using CSV files for reference, regex for patterns, and Spacy for NLP tasks, the system can handle various types of resume data and ensure accurate extraction for further analysis or recruitment purposes.
+
+## Database Integration
+The database integration is a critical part of the project, enabling structured storage of the extracted resume information in PostgreSQL. Here’s how it is set up:
+
+### Environment Configuration:
+The database connection parameters (host, port, username, password, and database name) are securely stored in a .env file to ensure confidentiality and ease of access.
+
+```python
+
+load_dotenv()  # Load environment variables from .env file
+conn = psycopg2.connect(
+    dbname=os.getenv("DATABASE_NAME"),
+    user=os.getenv("DATABASE_USER"),
+    password=os.getenv("DATABASE_PASSWORD"),
+    host=os.getenv("DATABASE_HOST"),
+    port=os.getenv("DATABASE_PORT")
+)
+```
+
+This snippet illustrates how the database connection is established using environment variables, which are loaded via the dotenv library to ensure sensitive information is not hardcoded.
+
+### Data Insertion Workflow:
+After resume information is extracted and structured, it is inserted into the candidate table in the PostgreSQL database.
+
+- Duplicate Checking: Before inserting, the system checks whether a record with the same email already exists in the candidate table or other related tables (e.g., users or company).
+
+- Data Formatting: Special care is taken to format data like phone numbers and skills into database-friendly formats (e.g., converting a list of skills into a semicolon-separated string).
+
+```python
+
+def save_to_postgresql(data, tenant_id):
+    candidate_id = str(uuid.uuid4())
+    cursor = conn.cursor()
+
+    # Check for duplicates in the candidate table
+    email = data.get('Email')
+    check_query = "SELECT candidate_id FROM candidate WHERE email_id = %s"
+    cursor.execute(check_query, (email,))
+    if cursor.fetchone():
+        raise ValueError("A record with this email already exists.")
+
+    # Insert new candidate data into the table
+    insert_query = """
+        INSERT INTO candidate (candidate_id, name, phone_number, email_id, relevant_experience, skill_set, current_job_role, current_work_location, account_active, tenant_id, terms_and_policy_accepted)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, true, %s, true)
+    """
+    cursor.execute(insert_query, (
+        candidate_id,
+        data.get('First Name') + " " + data.get('Last Name'),
+        data.get('Phone Numbers'),
+        data.get('Email'),
+        data.get('Experience', 0.0),  # Defaults to 0.0 if not present
+        data.get('Skillset'),
+        data.get('Job Role'),
+        data.get('Location'),
+        tenant_id
+    ))
+
+    conn.commit()
+    cursor.close()
+    return candidate_id
+
+```
+This function ensures that the extracted resume information is formatted and inserted into the database while preventing duplicate records. The UUID is used to assign unique identifiers to each candidate.
+
+### Schema Overview:
+The schema for the candidate table includes fields such as:
+
+- candidate_id: A unique identifier (UUID) for each candidate.
+- name: Full name of the candidate (first and last name combined).
+- phone_number: Contact information of the candidate.
+- email_id: Unique email ID (used for duplicate checking).
+- relevant_experience: Years of relevant experience extracted from the resume.
+- skill_set: A semicolon-separated string of skills.
+- current_job_role: Job role extracted from the resume.
+- current_work_location: Geographic location extracted using NLP.
+- account_active, terms_and_policy_accepted: Boolean flags for tracking active accounts and terms acceptance.
+
+### Database Interaction:
+
+- Duplicate Prevention: The system checks for the candidate’s email across multiple tables (candidate, users, company) to avoid inserting duplicate records. This ensures data integrity and prevents redundant data entries.
+
+- Error Handling: The system implements error handling to manage situations like invalid inputs or failed connections.
+
+```python
+
+try:
+    # Check and insert candidate data
+except ValueError as ve:
+    print(f"ValueError: {ve}")
+except Exception as e:
+    print(f"An error occurred: {e}")
+In case a duplicate is found or another error occurs, the system returns an appropriate error message and aborts the insertion process.
+```
+
+### Future Enhancements:
+Relational Mapping: More relational tables can be added (e.g., to track multiple past job roles or experiences).
