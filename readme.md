@@ -3,10 +3,10 @@
 ## Table of contents
 
 1. Project Overview
-- Context
-- Actions
-- Results
-- Growth/Next Steps
+    - Context
+    - Actions
+    - Results
+    - Growth/Next Steps
 2. Data Overview
 3. Growth & Next Steps
 
