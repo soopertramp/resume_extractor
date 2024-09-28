@@ -22,13 +22,13 @@ The system ensures data validation and checks for duplicates before insertion.
 
 ### Actions:
 
-**Text Extraction**: Extract raw text from resumes using pdfplumber (PDF) and docx (DOCX).
+- **Text Extraction**: Extract raw text from resumes using pdfplumber (PDF) and docx (DOCX).
 
-**Information Extraction**: Use Spacy for NLP-based extraction (names, locations), and regex for phone numbers and emails. CSV files are loaded to match skills and job roles.
+- **Information Extraction**: Use Spacy for NLP-based extraction (names, locations), and regex for phone numbers and emails. CSV files are loaded to match skills and job roles.
 
-**Database Storage**: Store the parsed information in PostgreSQL, ensuring no duplicate entries exist based on email.
+- **Database Storage**: Store the parsed information in PostgreSQL, ensuring no duplicate entries exist based on email.
 
-**Results**: The system streamlines the resume parsing process, automating tasks that were traditionally done manually. It provides structured data that can be further used for recruitment purposes or analysis. The extracted data includes names, qualifications, experience, skills, and contact information, ensuring that all critical aspects of a candidate's resume are covered.
+- **Results**: The system streamlines the resume parsing process, automating tasks that were traditionally done manually. It provides structured data that can be further used for recruitment purposes or analysis. The extracted data includes names, qualifications, experience, skills, and contact information, ensuring that all critical aspects of a candidate's resume are covered.
 
 ### Growth/Next Steps:
 
