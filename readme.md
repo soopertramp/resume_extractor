@@ -2,13 +2,35 @@
 
 ## Table of contents
 
-1. Project Overview
-    - Context
-    - Actions
-    - Results
-    - Growth/Next Steps
-2. Data Overview
-3. Growth & Next Steps
+1. [Project Overview]()
+    - [Context]()
+    - [Actions]()
+    - [Results]()
+    - [Growth/Next Steps]()
+2. [Data Overview & Preparation]()
+    - [Resume Data]()
+    - [Skills and Job Roles Data]()
+    - [Qualification and Experience Data]()
+    - [Spacy NLP Pipeline]()
+    - [Handling Multiple Data Types]()
+    - [Summary of Data Preparation]()
+3. [Database Integration](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#database-integration)
+    - [Environment Configuration](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#environment-configuration)
+    - [Data Insertion Workflow](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#data-insertion-workflow)
+    - [Schema Overview](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#schema-overview)
+    - [Database Interaction](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#database-interaction)
+4. [How It Works: Overall Process](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#how-it-works-overall-process)
+    - [File Upload](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#file-upload-users-upload-resumes-in-pdf-or-docx-format-via-a-flask-api)
+    - [Text Extraction](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#text-extraction-the-system-extracts-the-raw-text-from-the-uploaded-resume-using)
+    - [Information Extraction](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#information-extraction)
+    - [Data Structuring](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#data-structuring)
+    - [Duplicate Checking](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#duplicate-checking)
+    - [Database Insertion](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#database-insertion)
+    - [Response](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#response)
+    - [Error Handling](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#error-handling)
+5. [Technologies Used](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#technologies-used)
+6. [Folder Structure](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#folder-structure)
+7. [Future Improvements](https://github.com/soopertramp/resume_extractor?tab=readme-ov-file#future-improvements)
 
 ## Project Overview
 
@@ -28,7 +50,8 @@ The system ensures data validation and checks for duplicates before insertion.
 
 - **Database Storage**: Store the parsed information in PostgreSQL, ensuring no duplicate entries exist based on email.
 
-- **Results**: The system streamlines the resume parsing process, automating tasks that were traditionally done manually. It provides structured data that can be further used for recruitment purposes or analysis. The extracted data includes names, qualifications, experience, skills, and contact information, ensuring that all critical aspects of a candidate's resume are covered.
+### Results: 
+The system streamlines the resume parsing process, automating tasks that were traditionally done manually. It provides structured data that can be further used for recruitment purposes or analysis. The extracted data includes names, qualifications, experience, skills, and contact information, ensuring that all critical aspects of a candidate's resume are covered.
 
 ### Growth/Next Steps:
 
@@ -45,7 +68,7 @@ The system ensures data validation and checks for duplicates before insertion.
 ## Data Overview & Preparation
 The project relies on resume documents (PDF and DOCX) as input and pre-defined structured data (CSV files) for reference.
 
-**Resume Data**:
+### Resume Data:
 
 The resumes are sourced in PDF and DOCX formats, uploaded by users via the Flask API. The system extracts unstructured text from these files using libraries like pdfplumber for PDFs and docx for Word documents. The extracted raw text forms the basis for the information extraction pipeline.
 
@@ -86,7 +109,7 @@ def extract_text_from_word(docx_path):
 
 **Then comes information extraction from the extracted text.**
 
-**Skills and Job Roles Data**:
+### Skills and Job Roles Data:
 
 The project uses pre-defined CSV files for matching skills and job roles:
 
@@ -146,7 +169,7 @@ def extract_job_role(text):
 - It loads a list of job roles from another CSV file (job_role.csv) and checks if any of the job roles appear in the text (also case-insensitive).
 - If a matching job role is found, it returns the first one; if no match is found, it returns an empty string.
 
-**Qualification and Experience Data**:
+### Qualification and Experience Data:
 -   The system looks for standard education degrees (e.g., B.Tech, M.Sc) in the resume text by referencing a list of common qualifications embedded in the code.
 
 -   Years of Experience: Experience is identified using regular expressions, typically in the format "X years of experience." If available, experience is parsed and converted into a structured format.
@@ -214,7 +237,7 @@ def extract_experience(text):
 - It uses a regular expression (\b\d+ years\b) to search for patterns like "5 years," indicating years of experience.
 - If a match is found, the first match is returned; otherwise, an empty string is returned.
 
-**Spacy NLP Pipeline**:
+### Spacy NLP Pipeline:
 
 Spacy’s Named Entity Recognition (NER) is employed to identify proper nouns, like names, and geographic entities (locations) from the resume text.
 
@@ -268,11 +291,11 @@ def extract_names(text):
 - If a match is found, it splits the span into individual words, assuming the first and last words are the first and last names, respectively.
 - If no valid name is found, it returns empty strings ('', '').
 
-**Handling Multiple Data Types**:
+### Handling Multiple Data Types:
 
 The system supports both structured (CSV files) and unstructured (text from resumes) data types. CSV files are used for matching skills and job roles, while the unstructured text is processed using regex and NLP.
 
-**Summary of Data Preparation**:
+### Summary of Data Preparation:
 
 The project efficiently handles text extraction, qualification matching, skills/job role matching, and ensures data is structured before storage. Using CSV files for reference, regex for patterns, and Spacy for NLP tasks, the system can handle various types of resume data and ensure accurate extraction for further analysis or recruitment purposes.
 
@@ -371,9 +394,8 @@ except Exception as e:
 In case a duplicate is found or another error occurs, the system returns an appropriate error message and aborts the insertion process.
 
 ## How It Works: Overall Process
-### File Upload: Users upload resumes in PDF or DOCX format via a Flask API.
-
-The file is saved temporarily in a designated upload folder.
+### File Upload: 
+Users upload resumes in PDF or DOCX format via a Flask API. The file is saved temporarily in a designated upload folder.
 
 ### Text Extraction: The system extracts the raw text from the uploaded resume using:
 
