@@ -1,0 +1,10 @@
+.env
+Uploads
+__pycache__/main.cpython-311.pyc
+src/__pycache__/__init__.cpython-311.pyc
+src/__pycache__/info_extractor.cpython-311.pyc
+src/__pycache__/json_dumps.cpython-311.pyc
+src/__pycache__/text_extractor.cpython-311.pyc
+src/__pycache__/info_extractor.cpython-311.pyc
+src/__pycache__/text_extractor.cpython-311.pyc
+src/__pycache__
